@@ -27,15 +27,25 @@ more wide-spread, we could make a lot of this javascript superfluous
 			// is or is not available for editing
 			$(":input").attr("disabled", "disabled");
 			
+			if (typeof enableCKEditor === 'function')
+                enableCKEditor(false);
+			
 			$.getJSON(base_url + "/is_locked/", function(lock, status) {
-				if (lock.applies && status != '404') {
+				 if (lock != null && lock.has_alternate_lock) {
+                    // alternate lock takes priority over regular lock
+                    var notice = interpolate(gettext('<p class="is_locked">' + lock.message + '</p>'))
+                    $("#content").prepend(notice);
+                } else if (lock != null && lock.applies && status != '404') {
 				
 					var notice = interpolate(gettext('<p class="is_locked">This content is currently being edited by <em>%(for_user)s</em>. You can read it but not edit it.</p>'), lock, true);
 					
 					$("#content").prepend(notice);
 					
 				} else {
-					$(":input").removeAttr("disabled");
+					$(":input").not(".force-disabled").removeAttr("disabled");
+					
+					if (typeof enableCKEditor === 'function')
+                            enableCKEditor(true);
 					
 					lock_post(base_url);
 					

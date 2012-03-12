@@ -3,6 +3,7 @@ from django.conf import settings
 from django.utils.translation import ugettext as _
 from locking.models import Lock
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 
 class LockableAdmin(admin.ModelAdmin):
     
@@ -49,9 +50,10 @@ def get_lock_for_admin(self_obj, obj):
 	'''
 	
 	locked_by = ""
+	content_type = ContentType.objects.get_for_model(obj)
 
 	try:
-		lock = Lock.objects.get(entry_id=obj.id, app=obj.__module__[0:obj.__module__.find(".")], model=obj.__class__.__name__)
+		lock = Lock.objects.get(entry_id=obj.id, app=content_type.app_label, model=content_type.model)
 		class_name = "locked"
 		locked_by = u'%s %s' % (lock.locked_by.first_name, lock.locked_by.last_name)
 		

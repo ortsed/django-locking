@@ -1,16 +1,51 @@
-What the heck is this?
-----------------------
+Based on the Django Locking plugin at stdbrouw/django-locking.  
+Forked to fix a number of issues and add in functionality to show and edit locks in list mode.
 
-Django has seen great adoption in the content management sphere, especially among the newspaper crowd. One of the trickier things to get right, is to make sure that nobody steps on each others toes while editing and modifying existing content. Newspaper editors might not always be aware of what other editors are up to, and this goes double for distributed teams. When different people work on the same content, the one who saves last will win the day, while the other edits are overwritten.
+Installation through Pip (pip install django-locking)
 
-`django-locking` provides a system that makes concurrent editing impossible, and informs users of what other users are working on and for how long that content will remain locked. Users can still read locked content, but cannot modify or save it.
+Configuration:
 
-Documentation
--------------
+1) Add locking to list of INSTALLED_APPS in project settings file
 
-django-locking is fairly well-documented. Check out the docs!
+2) Add locking js/css/image media files to admin media folder
 
-License
--------
+3) Add the following Media elements in the app admin file to correspond with the media folder:
+Note: If using a newer version of django-grappelli (e.g. 2.3.5), you may have to create an alternate variable in
+the settings file that doesn't point to the grappelli folder (i.e. STANDARD_ADMIN_MEDIA_PREFIX)
 
-django-locking comes with a simplified BSD license, see the included LICENSE file for details.
+class Media:
+  js = ( ...,
+    settings.ADMIN_MEDIA_PREFIX + "locking/js/jquery.url.packed.js",
+  	"/ajax/admin/variables.js",
+		settings.ADMIN_MEDIA_PREFIX + "locking/js/admin.locking.js?v=1")
+
+  css = ( ...,
+    "all": ( ...,
+      settings.ADMIN_MEDIA_PREFIX + "locking/css/locking.css",
+    
+    )
+  )
+
+4) To use the list display icon, add the "get_lock_for_admin" method to the list display in the admin class for the app. Also, so the changelist view has access to the request object, it has to be explicitly passed:
+
+	from locking import admin as locking_admin
+	
+	class ModelAdmin(admin.ModelAdmin):
+		
+		get_lock_for_admin = locking_admin.get_lock_for_admin
+	
+		list_display = [field1, field2, ..., 'get_lock_for_admin']
+		
+	    def changelist_view(self, request, extra_context=None):
+			'''
+			We need the request objects in a few places where it's usually not present,
+			so we are adding it to ModelAdmin object
+			'''
+			self.request = request
+			return super(ModelAdmin, self).changelist_view(request, extra_context)
+
+
+5) Run syncdb for an initial project or create a migration with south to build the database tables
+
+  manage.py schemamigration locking --auto
+  manage.py migrate locking
