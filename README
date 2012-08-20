@@ -7,7 +7,7 @@ Configuration:
 
 1) Add locking to list of INSTALLED_APPS in project settings file
 
-2) Add locking js/css/image media files to admin media folder
+2) Run manage.py collectstatic to pull locking static content into the project
 
 3) Add the following Media elements in the app admin file to correspond with the media folder:
 Note: If using a newer version of django-grappelli (e.g. 2.3.5), you may have to create an alternate variable in
