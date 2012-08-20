@@ -71,4 +71,4 @@ def js_variables(request):
 		'base_url': "/".join(request.path.split('/')[:-1]),
 		'timeout': LOCK_TIMEOUT,
 		})
-	return HttpResponse(response)
+	return HttpResponse(response, mimetype="application/javascript")
