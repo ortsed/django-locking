@@ -7,9 +7,18 @@ Configuration:
 
 1) Add locking to list of INSTALLED_APPS in project settings file
 
-2) Run manage.py collectstatic to pull locking static content into the project
+2) Add locking urls to the app urls.py file:
 
-3) Add the following Media elements in the app admin file to correspond with the media folder:
+  url(r'^ajax/admin/', include('locking.urls')),
+
+3) Run syncdb for an initial project or create a migration with south to build the database tables
+
+  manage.py schemamigration locking --auto
+  manage.py migrate locking
+
+4) Run manage.py collectstatic to pull locking static content into the project
+
+5) Add the following Media elements in the app admin file to correspond with the media folder:
 Note: If using a newer version of django-grappelli (e.g. 2.3.5), you may have to create an alternate variable in
 the settings file that doesn't point to the grappelli folder (i.e. STANDARD_ADMIN_MEDIA_PREFIX)
 
@@ -26,7 +35,7 @@ class Media:
     )
   )
 
-4) To use the list display icon, add the "get_lock_for_admin" method to the list display in the admin class for the app. Also, so the changelist view has access to the request object, it has to be explicitly passed:
+6) To use the changelist locking icon, add the "get_lock_for_admin" method to the list display in the admin class for the app. Also, so the changelist view has access to the request object, it has to be explicitly passed:
 
 	from locking import admin as locking_admin
 	
@@ -45,7 +54,3 @@ class Media:
 			return super(ModelAdmin, self).changelist_view(request, extra_context)
 
 
-5) Run syncdb for an initial project or create a migration with south to build the database tables
-
-  manage.py schemamigration locking --auto
-  manage.py migrate locking
