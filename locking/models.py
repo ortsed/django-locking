@@ -48,7 +48,7 @@ class Lock(models.Model):
 		return self._locked_by
 
 	@property
-	def is_locked(self):
+	def is_active(self):
 		"""
 		Checks if lock exists and hasn't timed out
 		"""
@@ -106,7 +106,7 @@ class Lock(models.Model):
 		to edit a locked object.
 		"""
 		# a lock does not apply to the person who initiated the lock
-		if self.is_locked and self.locked_by.id != user.id:
+		if self.is_active and self.locked_by.id != user.id:
 			return True
 		else:
 			return False

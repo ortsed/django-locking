@@ -56,13 +56,15 @@ def is_locked(request, app, model, id):
 		
 		if obj.locked_by == request.user:
 			return HttpResponse(status=200)
+		elif not obj.is_active:
+			obj.delete()
 		else :
 			response = simplejson.dumps({
-				"is_active": obj.is_locked,
+				"is_active": obj.is_active,
 				"for_user": getattr(obj.locked_by, 'username', None),
 				"applies": obj.lock_applies_to(request.user),
 				})
-			return HttpResponse(response)
+			return HttpResponse(response, mimetype="application/javascript")
 	except:
 		return HttpResponse(status=200)
 
