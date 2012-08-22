@@ -53,8 +53,6 @@ def unlock(request, app, model, id):
 def is_locked(request, app, model, id):
 	try:
 		obj = Lock.objects.get(entry_id=id, app=app, model=model)
-		if not obj.is_active:
-			obj.delete()
 		if obj.locked_by == request.user:
 			return HttpResponse(status=200)
 			

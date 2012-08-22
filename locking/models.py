@@ -9,7 +9,7 @@ class ObjectLockedError(IOError):
 	
 class LockManager(models.Manager):
 	def get_active_lock(self, entry_id=None, app=None, model=None):
-		last_locked_at = datetime.today() - timedelta(seconds=LOCK_TIMEOUT)
+		last_locked_at = datetime.now() - timedelta(seconds=LOCK_TIMEOUT)
 		return self.get(entry_id=entry_id, app=app, model=model, _locked_at__gte=last_locked_at)
 		
 
@@ -60,7 +60,7 @@ class Lock(models.Model):
 		Checks if lock exists and hasn't timed out
 		"""
 		if isinstance(self.locked_at, datetime):
-			if (datetime.today() - self.locked_at).seconds < LOCK_TIMEOUT:
+			if (datetime.now() - self.locked_at).seconds < LOCK_TIMEOUT:
 				return True
 			else:
 				return False
