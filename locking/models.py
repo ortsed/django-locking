@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.db import models, IntegrityError
 from django.contrib.auth import models as auth
@@ -6,11 +6,18 @@ from locking import LOCK_TIMEOUT
 
 class ObjectLockedError(IOError):
 	pass
+	
+class LockManager(models.Manager):
+	def get_active_lock(self, entry_id=None, app=None, model=None):
+		last_locked_at = datetime.today() - timedelta(seconds=LOCK_TIMEOUT)
+		return self.get(entry_id=entry_id, app=app, model=model, _locked_at__gte=last_locked_at)
+		
 
 class Lock(models.Model):
 	""" 
 	Main model for the locking app, has properties for the app/model/object that the lock is for and the time/person doing the locking
 	"""
+	objects = LockManager()
 
 	class Meta:
 		unique_together = (("app", "model", "entry_id"),)
@@ -58,6 +65,7 @@ class Lock(models.Model):
 			else:
 				return False
 		return False
+		
 	
 	@property
 	def lock_seconds_remaining(self):

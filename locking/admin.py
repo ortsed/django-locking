@@ -53,11 +53,10 @@ def get_lock_for_admin(self_obj, obj):
 	content_type = ContentType.objects.get_for_model(obj)
 
 	try:
-		lock = Lock.objects.get(entry_id=obj.id, app=content_type.app_label, model=content_type.model)
+		lock = Lock.objects.get_active_lock(entry_id=obj.id, app=content_type.app_label, model=content_type.model)
 		class_name = "locked"
 		locked_by = u'%s %s' % (lock.locked_by.first_name, lock.locked_by.last_name)
 		
-	
 	except Lock.DoesNotExist:
 		class_name = "unlocked"
 	except User.DoesNotExist:
