@@ -21,10 +21,6 @@ class Lock(models.Model):
 
 	class Meta:
 		unique_together = (("app", "model", "entry_id"),)
-
-	def __init__(self, *vargs, **kwargs):
-		super(Lock, self).__init__(*vargs, **kwargs)
-		self._state.locking = False
 		
 	_locked_at = models.DateTimeField(db_column='locked_at', 
 		null=True,
@@ -88,16 +84,12 @@ class Lock(models.Model):
 			self._locked_at = datetime.today()
 			self._locked_by = user
 			date = self.locked_at.strftime("%H:%M:%S")
-			# an administrative toggle, to make it easier for devs to extend `django-locking`
-			# and react to locking and unlocking
-			self._state.locking = True
 
 	def unlock(self):
 		"""
 		Override lock, for use by admins.
 		"""
 		self._locked_at = self._locked_by = None
-		self._state.locking = True
 	
 	def unlock_for(self, user):
 		"""
@@ -126,5 +118,3 @@ class Lock(models.Model):
 			super(Lock, self).save(*vargs, **kwargs)
 		except IntegrityError:
 			raise ObjectLockedError("Duplicate lock already in place")
-			
-		self._state.locking = False
