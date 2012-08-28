@@ -26,7 +26,7 @@
                 enableCKEditor(false);
 			
 			$.getJSON(base_url + "/is_locked/", function(lock, status) {
-				 if (lock != null && lock.applies && status != '404') {
+				 if (lock != null && status != '404') {
 				
 					var notice = interpolate(gettext('<p class="is_locked">This content is currently being edited by <em>%(for_user)s</em>. You can read it but not edit it.</p>'), lock, true);
 
