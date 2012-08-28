@@ -25,7 +25,7 @@ def is_locked(request, app, model, id):
 	""" 
 	Check lock status of object, return 200 response if not, return lock details if it is
 	"""
-	lock = Lock.objects.get_active_lock(entry_id=id, app=app, model=model, user_id=request.user)
+	lock = Lock.objects.get_active_lock(entry_id=id, app=app, model=model, user=request.user)
 	if lock:
 		response = simplejson.dumps({
 			"for_user": getattr(obj.locked_by, "username", None),
