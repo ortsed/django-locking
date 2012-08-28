@@ -6,7 +6,7 @@ from locking.models import Lock, ObjectLockedError
 def lock(request, app, model, id):
 	""" Create or re-lock an object based on the app/model/id """
 	try:
-		lock = Lock.objects.set_lock(entry_id=id, app=app, model=model, user_id=request.user)
+		lock = Lock.objects.set_lock(entry_id=id, app=app, model=model, user=request.user)
 		return HttpResponse(status=200)
 	except ObjectLockedError, ValueError:
 		return HttpResponse(status=403)
