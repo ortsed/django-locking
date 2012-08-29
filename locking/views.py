@@ -28,7 +28,7 @@ def is_locked(request, app, model, id):
 	lock = Lock.objects.get_active_lock(entry_id=id, app=app, model=model, user=request.user)
 	if lock:
 		response = simplejson.dumps({
-			"for_user": getattr(obj.locked_by, "username", None),
+			"for_user": getattr(lock.locked_by, "username", None),
 			})
 		return HttpResponse(response, mimetype="application/javascript")
 	else:
