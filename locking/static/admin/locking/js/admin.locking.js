@@ -48,7 +48,7 @@
 						unlock_post(base_url);
 					})
 					
-					setInterval(function(){lock_post(base_url)}, locking.timeout * 1000);
+					setInterval(function(){lock_post(base_url)}, locking.timeout * 100);
 				}
 				
 			})

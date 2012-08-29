@@ -18,7 +18,7 @@ class LockManager(models.Manager):
 		except Lock.DoesNotExist:
 			return None
 		
-		if lock.locked_by.id == user.id:
+		if user and lock.locked_by.id == user.id:
 			return None
 			
 		elif not lock.is_active:
@@ -44,9 +44,10 @@ class LockManager(models.Manager):
 		"""
 		Update the lock if it exists, create a new one if it doesnt, and return false if this fails
 		"""
-		lock = self.get_active_lock(entry_id=entry_id, app=app, model=model, user=user)
-		
+		lock = self.get_active_lock(entry_id=entry_id, app=app, model=model)
+
 		if lock:
+			
 			if lock.locked_by.id != user.id:
 				raise ObjectLockedError("This object is already locked by another user.")
 			
@@ -60,10 +61,10 @@ class LockManager(models.Manager):
 			#if not isinstance(user, auth.User):
 			#	raise ValueError("You should pass a valid auth.User to lock_for.")
 			
-			lock._locked_at = datetime.today()
 			lock._locked_by = user
 		
 		# try to save the lock
+		lock._locked_at = datetime.today()
 		lock.save()
 		return True
 
